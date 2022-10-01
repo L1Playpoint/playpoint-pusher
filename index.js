@@ -1,38 +1,39 @@
-const express = require("express");
-
-const app = express();
-
-// deepcode ignore UseCsurfForExpress: CSRF Protection will disallow Socket to function properly!
+// file deepcode ignore UseCsurfForExpress: CSRF Protection will disallow Socket to function properly!
+const app = require("express")();
 const helmet = require("helmet");
 app.use(helmet());
-
-const PORT = process.env.POR || 4000;
-
-const http = require("http").Server(app);
 const cors = require("cors");
+const bodyParser = require("body-parser");
+const morgan = require("morgan");
+const { socketConfig } = require("./utils/socket");
+const { dbConfig } = require("./utils/db");
+const APIRouter = require("./utils/router");
+const PORT = process.env.POR || 4000;
+const http = require("http").Server(app);
 
-app.use(cors());
+app
+  .use(cors())
+  .use(morgan("dev"))
+  .use(bodyParser.json())
+  .use(bodyParser.urlencoded({ extended: true }));
 
-const socketIO = require("socket.io")(http, {
-  cors: {
-    origin: "*",
-  },
-});
+/**
+ * @dev configuration utils
+ * 1. Database Configuration
+ * 2. Socket Configuration
+ */
+dbConfig();
+socketConfig(http);
 
-//Add this before the app.get() block
-socketIO.on("connection", (socket) => {
-  console.log(`⚡: ${socket.id} user just connected!`);
-  socket.on("disconnect", () => {
-    console.log("🔥: A user disconnected!");
-  });
-});
-
-app.get("/api", (req, res) => {
+/**
+ * @dev Router Configuration
+ */
+app.use("/", APIRouter).get("*", (req, res) =>
   res.json({
-    message: "Hello world",
-  });
-});
+    msg: "404 Not Found! 🦟",
+  })
+);
 
 http.listen(PORT, () => {
-  console.log(`Server listening on ${PORT}`);
+  console.log(`👾 : Server listening on ${PORT}!`);
 });
