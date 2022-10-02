@@ -4,6 +4,7 @@ const helmet = require("helmet");
 const cors = require("cors");
 const bodyParser = require("body-parser");
 const morgan = require("morgan");
+const rateLimit = require("express-rate-limit");
 const http = require("http").Server(app);
 
 const { dbConfig } = require("./utils/db");
@@ -18,6 +19,8 @@ app
   .use(bodyParser.urlencoded({ extended: true }))
   .use(helmet());
 
+global.__basedir = __dirname;
+
 /**
  * @dev configuration utils
  * 1. Database Configuration
@@ -28,8 +31,15 @@ socketConfig(http);
 /**
  * @dev Router Configuration
  */
-app.use("/", APIRouter).get("*", (req, res) =>
-  res.json({
+const apiLimiter = rateLimit({
+  windowMs: 15 * 60 * 1000, // 15 minutes
+  max: 100, // Limit each IP to 100 requests per `window` (here, per 15 minutes)
+  standardHeaders: true, // Return rate limit info in the `RateLimit-*` headers
+  legacyHeaders: false, // Disable the `X-RateLimit-*` headers
+});
+
+app.use("/api/v1", apiLimiter, APIRouter).get("*", (req, res) =>
+  res.status(404).json({
     msg: "404 Not Found! 🦟",
   })
 );
