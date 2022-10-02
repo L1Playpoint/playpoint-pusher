@@ -22,11 +22,10 @@ const marketplaceSchema = new Schema({
     unique: [true, "Marketplace slug must be unique!"],
   },
   marketplaceName: returnType(String, true, "Marketplace name is required!"),
-  marketplaceCoverImage: returnType(
-    String,
-    true,
-    "Cover image url is required!"
-  ),
+  marketplaceCoverImage: {
+    fileId: returnType(String, true, "File ID of cover image is required!"),
+    url: returnType(String, true, "File URL is required!"),
+  },
   created_at: {
     type: Date,
     default: Date.now(),

@@ -1,11 +1,7 @@
-const { getMarketplaces, newMarketplace, updateMarketplace } = require("../api/controllers/Marketplace");
+const { getMarketplaces, newMarketplace, updateMarketplace, deleteMarketplace } = require("../api/controllers/Marketplace");
 const { multerUpload } = require("./MulterConfig");
 
 const APIRouter = require("express").Router();
-
-APIRouter.get("/", (req, res) =>
-  res.json({ message: "Welcome to V1 Playpoint API! 👌" })
-);
 
 /**
  * Marketplace API Routers
@@ -13,6 +9,7 @@ APIRouter.get("/", (req, res) =>
 APIRouter.get("/marketplace", getMarketplaces)
 .post("/new-marketplace",multerUpload.single("marketplaceCoverImage"), newMarketplace)
 .patch("/update-marketplace", updateMarketplace)
+.delete("/delete-marketplace", deleteMarketplace)
 
 
 module.exports = APIRouter;

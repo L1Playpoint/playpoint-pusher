@@ -66,7 +66,10 @@ module.exports = {
             let newMarketplaceItem = new Marketplace({
               marketplaceName,
               marketplaceSlug,
-              marketplaceCoverImage: result?.url,
+              marketplaceCoverImage: {
+                fileId: result.fileId,
+                url: result?.url,
+              },
             });
 
             await newMarketplaceItem.save();
@@ -100,7 +103,7 @@ module.exports = {
         {
           $set: {
             marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
-            marketplaceSlug: marketplaceSlug || tempMarketplace.marketplaceSlug,
+            marketplaceSlug: marketplaceSlug,
             marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
           },
         }
@@ -122,7 +125,10 @@ module.exports = {
    */
   deleteMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceSlug } = req.body;
+    const marketplace = await Marketplace.findOne({ marketplaceSlug });
+
     await Marketplace.deleteOne({ marketplaceSlug });
+    await imageKit.deleteFile(marketplace.marketplaceCoverImage.fileId);
     res.status(200).json({
       message: `Marketplace ${marketplaceSlug} deleted successfully!`,
     });

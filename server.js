@@ -38,11 +38,16 @@ const apiLimiter = rateLimit({
   legacyHeaders: false, // Disable the `X-RateLimit-*` headers
 });
 
-app.use("/api/v1", apiLimiter, APIRouter).get("*", (req, res) =>
-  res.status(404).json({
-    msg: "404 Not Found! 🦟",
-  })
-);
+app
+  .get("/", (req, res) =>
+    res.json({ message: "Welcome to V1 Playpoint API! 👌" })
+  )
+  .use("/api/v1", apiLimiter, APIRouter)
+  .get("*", (req, res) =>
+    res.status(404).json({
+      msg: "404 Not Found! 🦟",
+    })
+  );
 
 http.listen(PORT, () => {
   console.log(`👾 : Server listening on ${PORT}!`);
