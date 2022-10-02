@@ -1,4 +1,4 @@
-const { getMarketplaces, newMarketplace } = require("../api/controllers/Marketplace");
+const { getMarketplaces, newMarketplace, updateMarketplace } = require("../api/controllers/Marketplace");
 const { multerUpload } = require("./MulterConfig");
 
 const APIRouter = require("express").Router();
@@ -12,6 +12,7 @@ APIRouter.get("/", (req, res) =>
  */
 APIRouter.get("/marketplace", getMarketplaces)
 .post("/new-marketplace",multerUpload.single("marketplaceCoverImage"), newMarketplace)
+.patch("/update-marketplace", updateMarketplace)
 
 
 module.exports = APIRouter;
