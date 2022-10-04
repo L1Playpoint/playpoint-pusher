@@ -1,6 +1,6 @@
 const Fixture = require("../models/Fixture");
-import expressAsyncHandler from "express-async-handler";
-import { sanitizeQueryInput } from "../../utils/QuerySanitizer";
+const expressAsyncHandler = require("express-async-handler");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
 module.exports = {
   /**
@@ -8,9 +8,10 @@ module.exports = {
    *               @dev Get Specific Marketplaces
    * ****************************************************************
    */
-  getSpecificFixture: expressAsyncHandler(async (req, res) => {
+  getSpecificFixtureController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;
     const fixture = await Fixture.findOne({ _id: sanitizeQueryInput(_id) });
+    res.status(200).send({data: fixture});
   }),
   /**
    * ****************************************************************
@@ -111,7 +112,7 @@ module.exports = {
    *                     @dev Delete Fixture
    * ****************************************************************
    */
-  deleteFixtureController: (req, res) => {
+  deleteFixturesController: (req, res) => {
     const { _id } = req.body;
     Fixture.deleteOne({ _id: sanitizeQueryInput(_id) })
       .then(() =>
