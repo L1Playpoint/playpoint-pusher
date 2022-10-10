@@ -1,6 +1,6 @@
 const expressAsyncHandler = require("express-async-handler");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 const Result = require("../models/Result");
-const { sanitizeQueryInput } = require("../utils/QuerySanitizer");
 
 module.exports = {
   /**
@@ -8,28 +8,26 @@ module.exports = {
    *                  @dev Get All Results
    * ****************************************************************
    */
-  getResultController: (req, res) => {
-    Result.find()
-      .then((response) => res.status(200).json({ response: response }))
-      .catch((err) => console.error(err));
-  },
+  getResultController: expressAsyncHandler(async (req, res) => {
+    const results = await Result.find();
+    res.status(200).json({ data: results });
+  }),
   /**
    * ****************************************************************
    *                  @dev New Results
    * ****************************************************************
    */
-  newResultController: (req, res) => {
+  newResultController: expressAsyncHandler(async (req, res) => {
     const { questionaireId, results } = req.body;
 
-    Result.create({
+    const newResult = new Result({
       questionaireId,
       results,
-    })
-      .then(() => {
-        res.status(200).json({ message: "Results Created Successfully!" });
-      })
-      .catch((err) => console.error(err));
-  },
+    });
+
+    await newResult.save();
+    res.status(200).json({ message: "Results Created Successfully!" });
+  }),
   /**
    * ****************************************************************
    *                  @dev Update Results
@@ -55,13 +53,10 @@ module.exports = {
    *                  @dev Delete Result
    * ****************************************************************
    */
-  deleteResultController: (req, res) => {
+  deleteResultController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;
 
-    Result.deleteOne({ _id: sanitizeQueryInput(_id) })
-      .then(() =>
-        res.status(200).json({ message: "Result deleted successfully!" })
-      )
-      .catch((error) => console.error(error));
-  },
+    await Result.deleteOne({ _id: sanitizeQueryInput(_id) });
+    res.status(200).json({ message: "Result deleted successfully!" });
+  }),
 };

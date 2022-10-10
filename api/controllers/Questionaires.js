@@ -1,6 +1,6 @@
-import expressAsyncHandler from "express-async-handler";
-import { sanitizeQueryInput } from "../../utils/QuerySanitizer";
-import Questionaire from "../models/Questionaire";
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
+const expressAsyncHandler = require("express-async-handler");
+const Questionaire = require("../models/Questionaire");
 
 module.exports = {
   /**
@@ -8,14 +8,10 @@ module.exports = {
    *                  @dev Get All Questionaires
    * ****************************************************************
    */
-  getQuestionaireController: (req, res) => {
-    Questionaire.find()
-      .populate("fixtureId")
-      .then((response) => {
-        res.status(200).json({ data: response });
-      })
-      .catch((error) => console.error(error));
-  },
+  getQuestionaireController: expressAsyncHandler(async (req, res) => {
+    const questionaires = await Questionaire.find().populate("fixtureId");
+    res.status(200).json({ data: questionaires });
+  }),
   /**
    * ****************************************************************
    *                     @dev New Questionaires
@@ -47,7 +43,7 @@ module.exports = {
    *                     @dev Update Questionaire
    * ****************************************************************
    */
-  updateQuestionaireController: (req, res) => {
+  updateQuestionaireController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;
 
     const {
@@ -62,7 +58,7 @@ module.exports = {
       _id: sanitizeQueryInput(_id),
     });
 
-    Questionaire.updateOne(
+    await Questionaire.updateOne(
       { _id: sanitizeQueryInput(_id) },
       {
         $set: {
@@ -75,24 +71,19 @@ module.exports = {
           poolType: poolType || tempQuestionaire.poolType,
         },
       }
-    )
-      .then(() =>
-        res.status(200).json({ message: "Questionaire updated successfully!" })
-      )
-      .catch((err) => console.error(err));
-  },
+    );
+
+    res.status(200).json({ message: "Questionaire updated successfully!" });
+  }),
   /**
    * ****************************************************************
    *                     @dev Delete Questionaire
    * ****************************************************************
    */
-  deleteQuestionaireController: (req, res) => {
+  deleteQuestionaireController: expressAsyncHandler(async (req, res) => {
     const { _id } = req.body;
 
-    Questionaire.deleteOne({ _id: sanitizeQueryInput(_id) })
-      .then(() =>
-        res.status(200).json({ message: "Questionaire deleted successfully!" })
-      )
-      .catch((err) => console.error(err));
-  },
+    await Questionaire.deleteOne({ _id: sanitizeQueryInput(_id) });
+    res.status(200).json({ message: "Questionaire deleted successfully!" });
+  }),
 };
