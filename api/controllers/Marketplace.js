@@ -2,6 +2,7 @@ var fs = require("fs");
 const expressAsyncHandler = require("express-async-handler");
 const Marketplace = require("../models/Marketplace");
 const { imageKit } = require("../../utils/ImageKit");
+const { sanitizeQueryInput } = require("../../utils/QuerySanitizer");
 
 module.exports = {
   /**
@@ -12,7 +13,7 @@ module.exports = {
   getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceSlug } = req.body;
 
-    const marketplace = Marketplace.findOne({ marketplaceSlug });
+    const marketplace = Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
     if (marketplace) {
       res.status(200).json({
         data: marketplace,
@@ -96,7 +97,7 @@ module.exports = {
   updateMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceName, marketplaceSlug } = req.body;
 
-    const tempMarketplace = await Marketplace.findOne({ marketplaceSlug });
+    const tempMarketplace = await Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
     if (tempMarketplace) {
       await Marketplace.updateOne(
         { marketplaceSlug },
@@ -125,7 +126,7 @@ module.exports = {
    */
   deleteMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceSlug } = req.body;
-    const marketplace = await Marketplace.findOne({ marketplaceSlug });
+    const marketplace = await Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
 
     await Marketplace.deleteOne({ marketplaceSlug });
     await imageKit.deleteFile(marketplace.marketplaceCoverImage.fileId);
