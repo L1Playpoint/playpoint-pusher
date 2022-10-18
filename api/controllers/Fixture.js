@@ -51,8 +51,8 @@ module.exports = {
       HomeTeam,
       AwayTeam,
       Group,
-      HomeTeamScore,
-      AwayTeamScore,
+      HomeTeamScore: HomeTeamScore || 0,
+      AwayTeamScore: AwayTeamScore || 0,
     });
 
     await newFixture.save();

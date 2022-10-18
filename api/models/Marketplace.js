@@ -26,6 +26,7 @@ const marketplaceSchema = new Schema({
     fileId: returnType(String, true, "File ID of cover image is required!"),
     url: returnType(String, true, "File URL is required!"),
   },
+  tags: returnType(Array, true, "Tags are required!"),
   created_at: {
     type: Date,
     default: Date.now(),

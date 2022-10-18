@@ -25,6 +25,7 @@ const {
   updateResultController,
   deleteResultController,
 } = require("../api/controllers/Result");
+const { getCountStatus } = require("../api/helpers/adminStats");
 
 const APIRouter = require("express").Router();
 
@@ -73,5 +74,19 @@ APIRouter.get("/results", getResultController)
   .post("/new-result", newResultController)
   .patch("/update-result", updateResultController)
   .delete("/delete-result", deleteResultController);
+
+  /**
+ * ****************************************************************
+ *                       Active Prediction
+ * ****************************************************************
+ */
+// APIRouter.get("/active-prediction")
+
+/**
+ * ****************************************************************
+ *                       Admin Status
+ * ****************************************************************
+ */
+APIRouter.get("/admin-stats", getCountStatus)
 
 module.exports = APIRouter;

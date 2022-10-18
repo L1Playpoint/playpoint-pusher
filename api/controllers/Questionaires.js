@@ -9,7 +9,8 @@ module.exports = {
    * ****************************************************************
    */
   getQuestionaireController: expressAsyncHandler(async (req, res) => {
-    const questionaires = await Questionaire.find().populate("fixtureId");
+    // const questionaires = await Questionaire.find().populate("fixtureId");
+    const questionaires = await Questionaire.find();
     res.status(200).json({ data: questionaires });
   }),
   /**
@@ -25,6 +26,8 @@ module.exports = {
       questionaires,
       poolType,
     } = req.body;
+
+    console.log(questionaires)
 
     const newQuestionaire = new Questionaire({
       fixtureId,

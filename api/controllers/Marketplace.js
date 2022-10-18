@@ -13,7 +13,9 @@ module.exports = {
   getSpecificMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceSlug } = req.body;
 
-    const marketplace = Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
+    const marketplace = Marketplace.findOne({
+      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
+    });
     if (marketplace) {
       res.status(200).json({
         data: marketplace,
@@ -49,7 +51,7 @@ module.exports = {
    */
   // deepcode ignore NoRateLimitingForExpensiveWebOperation: Already configured on server.js
   newMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceName, marketplaceSlug } = req.body;
+    const { marketplaceName, marketplaceSlug, tags } = req.body;
     const { filename } = req.file;
 
     // deepcode ignore PT: <please specify a reason of ignoring this>
@@ -71,12 +73,14 @@ module.exports = {
                 fileId: result.fileId,
                 url: result?.url,
               },
+              // deepcode ignore HTTPSourceWithUncheckedType: <please specify a reason of ignoring this>
+              tags: tags.split(","),
             });
 
             await newMarketplaceItem.save();
 
             res.status(200).json({
-              sytatus: 200,
+              status: 200,
               message: "Marketplace created successfully!",
             });
 
@@ -95,17 +99,23 @@ module.exports = {
    * ****************************************************************
    */
   updateMarketplace: expressAsyncHandler(async (req, res) => {
-    const { marketplaceName, marketplaceSlug } = req.body;
+    const { marketplaceName, tags, marketplaceSlug } =
+      req.body;
+      console.log(req.body)
 
-    const tempMarketplace = await Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
+    const tempMarketplace = await Marketplace.findOne({
+      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
+    });
+
     if (tempMarketplace) {
       await Marketplace.updateOne(
         { marketplaceSlug },
         {
           $set: {
             marketplaceName: marketplaceName || tempMarketplace.marketplaceName,
-            marketplaceSlug: marketplaceSlug,
+            marketplaceSlug: tempMarketplace.marketplaceSlug,
             marketplaceCoverImage: tempMarketplace.marketplaceCoverImage,
+            tags: tags || tempFixture.tags,
           },
         }
       );
@@ -126,7 +136,9 @@ module.exports = {
    */
   deleteMarketplace: expressAsyncHandler(async (req, res) => {
     const { marketplaceSlug } = req.body;
-    const marketplace = await Marketplace.findOne({ marketplaceSlug: sanitizeQueryInput(marketplaceSlug) });
+    const marketplace = await Marketplace.findOne({
+      marketplaceSlug: sanitizeQueryInput(marketplaceSlug),
+    });
 
     await Marketplace.deleteOne({ marketplaceSlug });
     await imageKit.deleteFile(marketplace.marketplaceCoverImage.fileId);

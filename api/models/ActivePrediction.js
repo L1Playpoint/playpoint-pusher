@@ -25,4 +25,4 @@ const returnType = (type, require, requiredMessage) => {
     updated_at: Date,
   });
   
-  module.exports = Model("fixture", fixtureSchema);
+  module.exports = Model("activePrediction", fixtureSchema);

@@ -42,7 +42,9 @@ app
   .get("/", (req, res) =>
     res.json({ message: "Welcome to V1 Playpoint API! 👌" })
   )
-  .use("/api/v1", apiLimiter, APIRouter)
+  // this must be used for production
+  // .use("/api/v1", apiLimiter, APIRouter)
+  .use("/api/v1", APIRouter)
   .get("*", (req, res) =>
     res.status(404).json({
       msg: "404 Not Found! 🦟",

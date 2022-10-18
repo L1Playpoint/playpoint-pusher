@@ -18,16 +18,15 @@ const returnType = (type, require, requiredMessage,ref=null) => {
 };
 
 const questionaireSchema = new Schema({
-  fixtureId: returnType(Schema.Types.ObjectId, true, "Fixture ID is required!",'fixture'),
+  // fixtureId: returnType(Schema.Types.ObjectId, true, "Fixture ID is required!",'fixture'),
+  fixtureId: returnType(String, true, "Fixture ID is required!",'fixture'),
   questionaireType: returnType(Number, true, "Questionaire Type is required!"),
   questionairePrice: returnType(
     Number,
     true,
     "Questionaire Price is required!"
   ),
-  questionaires: [
-    { question: returnType(String, true, "Questionaire is required!") },
-  ],
+  questionaires: returnType(Array, true, "Questionaires is required!"),
   poolType: returnType(String, true, "Pool Type is required!"),
   created_at: {
     type: Date,
